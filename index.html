@@ -45,6 +45,21 @@
     .icon-img { font-size: 40px; }
     .icon-label { font-size: 13px; text-align: center; }
 
+    #horse {
+      position: fixed;
+      bottom: 56px;
+      left: 0;
+      margin: 0;
+      font-family: monospace;
+      font-size: 14px;
+      line-height: 1.1;
+      color: #7cfc9a;
+      opacity: 0.8;
+      white-space: pre;
+      pointer-events: none;
+      z-index: 1;
+    }
+
     .taskbar {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -55,6 +70,7 @@
       align-items: center;
       font-size: 14px;
       background: rgba(0, 0, 0, 0.6);
+      z-index: 2;
     }
 
     .window {
@@ -123,6 +139,8 @@
     </button>
   </main>
 
+  <pre id="horse" aria-hidden="true"></pre>
+
   <template id="about">
     <p>I studied medicine for four years before switching to Computer Science. Now I'm working toward becoming a data analyst, learning SQL, Excel, and Power BI, and documenting my progress here.</p>
   </template>
@@ -142,6 +160,34 @@
     }
     tick();
     setInterval(tick, 1000);
+
+    const horseBody = String.raw`               __
+              / o\__
+   _________/    __/
+ ~/          \__/
+~ \__________/`;
+
+    const horseLegs = [
+      String.raw`   /  /    \  \ 
+  /  /      \  \ `,
+      String.raw`   |  |    |  |
+   |  |    |  |`,
+      String.raw`   \  \    /  /
+    \  \  /  /`
+    ];
+
+    const horse = document.getElementById("horse");
+    const legOrder = [0, 1, 2, 1];
+    let step = 0;
+    let x = -200;
+
+    setInterval(function () {
+      horse.textContent = horseBody + "\n" + horseLegs[legOrder[step % 4]];
+      step++;
+      x += 10;
+      if (x > window.innerWidth) x = -200;
+      horse.style.transform = "translateX(" + x + "px)";
+    }, 90);
 
     let z = 10;
     document.querySelectorAll(".icon").forEach(function (icon) {
