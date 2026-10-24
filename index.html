@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kawthar Alshehri</title>
   <style>
+    :root { --lav: #b8a4f2; --lav-dark: #8f78e0; }
     * { box-sizing: border-box; }
 
     body {
@@ -12,13 +13,22 @@
       height: 100vh;
       overflow: hidden;
       font-family: system-ui, sans-serif;
-      color: #fff;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #eee;
+      background: #000;
+    }
+
+    #ascii {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
     }
 
     .desktop {
+      position: relative;
+      z-index: 3;
       display: grid;
-      grid-template-columns: repeat(auto-fill, 96px);
+      grid-template-columns: repeat(auto-fill, 100px);
       gap: 16px;
       padding: 24px;
     }
@@ -27,38 +37,26 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
-      padding: 8px;
-      border: none;
-      border-radius: 8px;
+      gap: 8px;
+      padding: 10px 6px;
+      border: 1px solid transparent;
+      border-radius: 10px;
       background: none;
-      color: #fff;
+      color: #eee;
       font: inherit;
       cursor: pointer;
     }
 
+    .icon svg { width: 48px; height: 48px; fill: var(--lav); filter: drop-shadow(0 0 8px rgba(184, 164, 242, 0.35)); }
+    .icon svg .fold { fill: var(--lav-dark); }
+
     .icon:hover, .icon:focus {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(184, 164, 242, 0.1);
+      border-color: rgba(184, 164, 242, 0.4);
       outline: none;
     }
 
-    .icon-img { font-size: 40px; }
-    .icon-label { font-size: 13px; text-align: center; }
-
-    #horse {
-      position: fixed;
-      bottom: 56px;
-      left: 0;
-      margin: 0;
-      font-family: monospace;
-      font-size: 14px;
-      line-height: 1.1;
-      color: #7cfc9a;
-      opacity: 0.8;
-      white-space: pre;
-      pointer-events: none;
-      z-index: 1;
-    }
+    .icon-label { font-size: 13px; font-family: ui-monospace, monospace; text-align: center; padding: 2px 6px; border-radius: 4px; background: rgba(0, 0, 0, 0.75); }
 
     .taskbar {
       position: fixed;
@@ -69,18 +67,23 @@
       justify-content: space-between;
       align-items: center;
       font-size: 14px;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 2;
+      font-family: ui-monospace, monospace;
+      background: rgba(0, 0, 0, 0.85);
+      border-top: 1px solid rgba(184, 164, 242, 0.3);
+      z-index: 5;
     }
+
+    .taskbar span:first-child { color: var(--lav); }
 
     .window {
       position: absolute;
-      width: 420px;
+      width: 440px;
       max-width: calc(100vw - 32px);
-      background: #f5f5f5;
-      color: #222;
+      background: #0c0c0e;
+      color: #e8e8e8;
+      border: 1px solid rgba(184, 164, 242, 0.45);
       border-radius: 10px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 30px rgba(184, 164, 242, 0.15), 0 10px 30px rgba(0, 0, 0, 0.6);
       overflow: hidden;
     }
 
@@ -89,8 +92,11 @@
       justify-content: space-between;
       align-items: center;
       padding: 8px 12px;
-      background: #e0e0e0;
-      font-size: 14px;
+      background: #17141f;
+      color: var(--lav);
+      font-size: 13px;
+      font-family: ui-monospace, monospace;
+      border-bottom: 1px solid rgba(184, 164, 242, 0.25);
       cursor: move;
       user-select: none;
     }
@@ -98,13 +104,14 @@
     .close {
       border: none;
       background: none;
-      font-size: 16px;
+      color: var(--lav);
+      font-size: 15px;
       cursor: pointer;
     }
 
-    .close:hover { color: #c00; }
+    .close:hover { color: #fff; }
 
-    .content { padding: 16px; line-height: 1.6; }
+    .content { padding: 16px; line-height: 1.7; }
 
     @media (max-width: 700px) {
       .window {
@@ -120,26 +127,26 @@
   </style>
 </head>
 <body>
+  <canvas id="ascii"></canvas>
+
   <main class="desktop">
     <button class="icon" data-window="about">
-      <span class="icon-img">📄</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l6 6v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path class="fold" d="M14 2v6h6z"/></svg>
       <span class="icon-label">about.txt</span>
     </button>
     <button class="icon" data-window="log">
-      <span class="icon-img">📝</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l6 6v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path class="fold" d="M14 2v6h6z"/></svg>
       <span class="icon-label">learning_log.md</span>
     </button>
     <button class="icon" data-window="projects">
-      <span class="icon-img">📁</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path class="fold" d="M2 6a2 2 0 0 1 2-2h5l2 2h9a2 2 0 0 1 2 2v1H2z"/><path d="M2 9h20v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z"/></svg>
       <span class="icon-label">projects/</span>
     </button>
     <button class="icon" data-window="notes">
-      <span class="icon-img">📁</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path class="fold" d="M2 6a2 2 0 0 1 2-2h5l2 2h9a2 2 0 0 1 2 2v1H2z"/><path d="M2 9h20v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z"/></svg>
       <span class="icon-label">notes/</span>
     </button>
   </main>
-
-  <pre id="horse" aria-hidden="true"></pre>
 
   <template id="about">
     <p>I studied medicine for four years before switching to Computer Science. Now I'm working toward becoming a data analyst, learning SQL, Excel, and Power BI, and documenting my progress here.</p>
@@ -154,6 +161,10 @@
   </footer>
 
   <script>
+    const CELL_W = 14;
+    const CELL_H = 18;
+    const FLIP_RATE = 0.004;
+
     function tick() {
       document.getElementById("clock").textContent =
         new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -161,33 +172,68 @@
     tick();
     setInterval(tick, 1000);
 
-    const horseBody = String.raw`               __
-              / o\__
-   _________/    __/
- ~/          \__/
-~ \__________/`;
+    const canvas = document.getElementById("ascii");
+    const ctx = canvas.getContext("2d");
+    let cols = 0, rows = 0, bits = null;
+    let mouseX = -9999, mouseY = -9999;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const horseLegs = [
-      String.raw`   /  /    \  \ 
-  /  /      \  \ `,
-      String.raw`   |  |    |  |
-   |  |    |  |`,
-      String.raw`   \  \    /  /
-    \  \  /  /`
-    ];
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = innerWidth * dpr;
+      canvas.height = innerHeight * dpr;
+      canvas.style.width = innerWidth + "px";
+      canvas.style.height = innerHeight + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.font = "13px ui-monospace, monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      cols = Math.ceil(innerWidth / CELL_W) + 1;
+      rows = Math.ceil(innerHeight / CELL_H) + 1;
+      bits = new Uint8Array(cols * rows);
+      for (let i = 0; i < bits.length; i++) bits[i] = Math.random() < 0.5 ? 0 : 1;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+    window.addEventListener("pointermove", function (e) { mouseX = e.clientX; mouseY = e.clientY; });
+    document.addEventListener("pointerleave", function () { mouseX = -9999; mouseY = -9999; });
 
-    const horse = document.getElementById("horse");
-    const legOrder = [0, 1, 2, 1];
-    let step = 0;
-    let x = -200;
+    let last = 0;
+    function draw(now) {
+      if (!still) requestAnimationFrame(draw);
+      if (now - last < 50) return;
+      last = now;
+      const t = now / 1000;
 
-    setInterval(function () {
-      horse.textContent = horseBody + "\n" + horseLegs[legOrder[step % 4]];
-      step++;
-      x += 10;
-      if (x > window.innerWidth) x = -200;
-      horse.style.transform = "translateX(" + x + "px)";
-    }, 90);
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          const i = y * cols + x;
+          if (Math.random() < FLIP_RATE) bits[i] ^= 1;
+
+          const px = x * CELL_W + CELL_W / 2;
+          const py = y * CELL_H + CELL_H / 2;
+
+          let v =
+            0.5 + 0.25 * Math.sin(x * 0.11 + t * 0.35) * Math.cos(y * 0.09 - t * 0.25) +
+            0.25 * Math.sin((x * 0.6 + y) * 0.06 - t * 0.5);
+
+          const d = Math.hypot(px - mouseX, py - mouseY);
+          const near = d < 180 ? 1 - d / 180 : 0;
+          v = Math.min(1, v + near * 0.7);
+
+          if (v > 0.7) {
+            const a = 0.12 + (v - 0.7) * 1.8;
+            ctx.fillStyle = "rgba(255,255,255," + Math.min(1, a).toFixed(2) + ")";
+            ctx.fillText(bits[i] ? "1" : "0", px, py);
+          } else {
+            ctx.fillStyle = "rgba(255,255,255," + (0.06 + v * 0.18).toFixed(2) + ")";
+            ctx.fillRect(px - 1, py - 1, 2, 2);
+          }
+        }
+      }
+    }
+    requestAnimationFrame(draw);
 
     let z = 10;
     document.querySelectorAll(".icon").forEach(function (icon) {
@@ -206,8 +252,8 @@
       win.style.zIndex = ++z;
 
       const offset = document.querySelectorAll(".window").length * 30;
-      win.style.top = (80 + offset) + "px";
-      win.style.left = (140 + offset) + "px";
+      win.style.top = (150 + offset) + "px";
+      win.style.left = (60 + offset) + "px";
 
       win.innerHTML =
         '<div class="titlebar"><span>' + title + '</span>' +
